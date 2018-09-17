@@ -1,0 +1,1 @@
+export const HIDE_MAIN_NAV = 'common/HIDE_MAIN_NAV';
