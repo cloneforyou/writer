@@ -1,0 +1,25 @@
+@import '../../Fabric.theme.less';
+@prefix: Landing;
+//
+.@{prefix} {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  height: 100vh;
+  &-left {
+    flex-basis: 200px;
+    flex-shrink: 0;
+  }
+}
+
+.ms-NavExample-LeftPane {
+  width: 208px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; // border: 1px solid #EEE;
+  overflow-y: auto
+}
+
+.logo {
+  line-height: 60px;
+  padding: 0 20px;
+}
