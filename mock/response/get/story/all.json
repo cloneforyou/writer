@@ -1,0 +1,29 @@
+{
+  "code": 200,
+  "result": {
+    "orders": {
+      "59bf53j64f33kj7k88fas35": 0,
+      "59bf53j64f33kj7k88fas36": 1
+    },
+    "list": [
+      {
+        "_id": "59bf53j64f33kj7k88fas35",
+        "name": "草稿本",
+        "cover": {
+          "bg": "#eee",
+          "color": "#fff",
+          "img": ""
+        }
+      },
+      {
+        "_id": "59bf53j64f33kj7k88fas36",
+        "name": "写作训练",
+        "cover": {
+          "bg": "#eee",
+          "color": "#fff",
+          "img": ""
+        }
+      }
+    ]
+  }
+}

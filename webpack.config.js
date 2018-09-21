@@ -13,7 +13,10 @@ module.exports = {
     port: 3000,
     // watchContentBase: true,
     hot: true,
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/api': 'http://localhost:5000'
+    }
   },
   module: {
     rules: [

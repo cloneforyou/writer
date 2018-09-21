@@ -1,0 +1,11 @@
+{
+  "name": "mockyeah",
+  "host": "0.0.0.0",
+  "port": 5000,
+  "fixturesDir": "./fixtures",
+  "capturesDir": "./mockyeah",
+  "output": true,
+  "journal": false,
+  "verbose": true,
+  "proxy": false
+}
