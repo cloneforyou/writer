@@ -1,25 +1,97 @@
 @import '../../Fabric.theme.less';
-@prefix: Landing;
+@prefix: Story;
 //
 .@{prefix} {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  flex-grow: 1;
   justify-content: stretch;
   height: 100vh;
-  &-left {
+  overflow: auto;
+  &-recent {
+    padding: 70px 120px;
     flex-basis: 200px;
     flex-shrink: 0;
   }
-}
-
-.ms-NavExample-LeftPane {
-  width: 208px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; // border: 1px solid #EEE;
-  overflow-y: auto
-}
-
-.logo {
-  line-height: 60px;
-  padding: 0 20px;
+  &-books {
+    padding: 60px;
+    &-list {
+      margin: 0 -10px;
+    }
+  }
+  &-book {
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    position: relative;
+    width: 14rem;
+    height: 21rem;
+    margin: 2em 10px;
+    transition: all 0.2s linear;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 4px 8px 8px 4px;
+    box-shadow: 0 3px 24px rgba(0, 0, 0, .26);
+    &:hover {
+      box-shadow: 0 4px 24px 3px rgba(0, 0, 0, .18);
+    }
+    &-actions {
+      opacity: 0;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 120;
+      color: #fff;
+      transition: opacity .5s;
+    }
+    &:hover &-actions {
+      opacity: 1;
+      button {
+        color:inherit;
+      }
+    }
+    &-cover {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      backface-visibility: hidden;
+      transform-origin: left center;
+      transition: inherit;
+      box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      padding: 6%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #663366 linear-gradient(90deg, transparent 3%, rgba(0, 0, 0, 0.1) 5%, transparent 6%);
+      h1 {
+        color: #fff;
+        word-break: break-all;
+        word-wrap: none;
+        margin-bottom: 2em;
+      }
+    }
+    &-new {
+      border: 2px dashed @themeDarkColor;
+      flex-direction: column;
+      border-radius: 8px;
+      box-shadow: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      & .@{prefix}--hover-show {
+        opacity: 0;
+        transition: opacity .3s;
+      }
+      &:hover {
+        // border:2px solid @themeDarkColor;
+        // transform: perspective(700px) ;
+        box-shadow: none;
+        .@{prefix}--hover-show {
+          opacity: 1;
+        }
+      }
+    }
+  }
 }

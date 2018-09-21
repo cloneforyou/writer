@@ -4,6 +4,7 @@ import 'normalize.css';
 
 import { BrowserRouter } from "react-router-dom";
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
+import 'office-ui-fabric-react/dist/css/fabric.css';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { loadTheme } from '@uifabric/styling';
 
