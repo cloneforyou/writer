@@ -3,7 +3,8 @@
   "result": {
     "orders": {
       "59bf53j64f33kj7k88fas35": 0,
-      "59bf53j64f33kj7k88fas36": 1
+      "59bf53j64f33kj7k88fas36": 1,
+      "59bf53j64f33kj7k88fas37": 2
     },
     "list": [
       {
@@ -18,6 +19,15 @@
       {
         "_id": "59bf53j64f33kj7k88fas36",
         "name": "写作训练",
+        "cover": {
+          "bg": "#eee",
+          "color": "#fff",
+          "img": ""
+        }
+      },
+      {
+        "_id": "59bf53j64f33kj7k88fas37",
+        "name": "MeToo",
         "cover": {
           "bg": "#eee",
           "color": "#fff",

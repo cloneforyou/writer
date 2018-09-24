@@ -1,0 +1,12 @@
+{
+  "code": 200,
+  "result": {
+    "_id": "59bf53j64f33kj7k88fas39",
+    "name": "新建的storybook",
+    "cover": {
+      "bg": "#eee",
+      "color": "#fff",
+      "img": ""
+    }
+  }
+}
