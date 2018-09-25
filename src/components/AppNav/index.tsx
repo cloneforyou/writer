@@ -64,7 +64,7 @@ export class NavBasic extends React.Component<any, any> {
 
 }
 
-class Root extends React.Component<Props & RouteComponentProps, State>{
+class MainNav extends React.Component<Props & RouteComponentProps, State>{
   constructor(props: Props & RouteComponentProps) {
     super(props);
     this.state = {
@@ -88,4 +88,4 @@ class Root extends React.Component<Props & RouteComponentProps, State>{
   }
 };
 
-export default withRouter(Root);
+export default withRouter(MainNav);

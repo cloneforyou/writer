@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-
+import { connect, InferableComponentEnhancerWithProps, MapStateToProps, MapDispatchToPropsParam } from 'react-redux';
+import { withRouter, RouteComponentProps, RouteProps } from 'react-router';
 import { Dispatch, ActionCreator, bindActionCreators, ActionCreatorsMapObject } from 'redux';
 
 
@@ -35,6 +35,7 @@ import {
 
 interface IOwnProps {
   //... props exposed for the real parent component
+
 }
 
 interface IStateProps {
@@ -51,8 +52,11 @@ interface IDispatchProps {
   updateStoryBookViaThunk: updateStoryBookThunked,
   dragStoryBookViaThunk: dragStoryBookThunked,
 }
-
-interface IProps extends IStateProps, IDispatchProps, IOwnProps { }
+interface PathProps {
+  history: any
+}
+interface IProps extends IStateProps, IDispatchProps, IOwnProps, RouteComponentProps<{}> {
+}
 
 export interface State {
   hideRenameModal: boolean,
@@ -67,7 +71,7 @@ export interface State {
 
 
 
-const mapStateToProps = (state: STATE.RootState) => ({
+const mapStateToProps: MapStateToProps<IStateProps, IOwnProps, STATE.RootState> = (state) => ({
   common: state.common,
   storybooks: state.storybooks,
 })
@@ -89,7 +93,7 @@ interface N extends ActionCreatorsMapObject {
 }
 
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
+const mapDispatchToProps: MapDispatchToPropsParam<N, IOwnProps> = (dispatch) => {
   return bindActionCreators<M, N>({
     getAllStoryBooksViaThunk,
     createStoryBookViaThunk,
@@ -189,6 +193,8 @@ class Stories extends React.Component<IProps, State>{
     }
   }
   private handleBookClick = (book: MODEL.Storybook) => {
+    const { history } = this.props;
+    history.push('/stories/' + book._id);
     console.log(book)
   }
   render() {
@@ -270,6 +276,6 @@ class Stories extends React.Component<IProps, State>{
     )
   }
 };
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(Stories);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Stories)
+);
