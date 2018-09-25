@@ -14,6 +14,8 @@ import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import './index.less';
 import { STATE } from '../../reducers/state';
+import Storybook from './Storybook';
+import * as MODEL from '../../../model'
 
 import {
   getAllStoryBooksViaThunk,
@@ -27,6 +29,8 @@ import {
   deleteStoryBookThunked,
   updateStoryBookViaThunk,
   updateStoryBookThunked,
+  dragStoryBookViaThunk,
+  dragStoryBookThunked,
 } from '../../actions'
 
 interface IOwnProps {
@@ -45,6 +49,7 @@ interface IDispatchProps {
   createStoryBookViaThunk: createStoryBookThunked,
   deleteStoryBookViaThunk: deleteStoryBookThunked,
   updateStoryBookViaThunk: updateStoryBookThunked,
+  dragStoryBookViaThunk: dragStoryBookThunked,
 }
 
 interface IProps extends IStateProps, IDispatchProps, IOwnProps { }
@@ -57,6 +62,7 @@ export interface State {
   deleteId: string,
   renameName: string,
   deleteName: string,
+  dragId: string,
 }
 
 
@@ -71,6 +77,7 @@ interface M extends ActionCreatorsMapObject {
   createStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
   deleteStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
   updateStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  dragStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
 }
 
 interface N extends ActionCreatorsMapObject {
@@ -78,6 +85,7 @@ interface N extends ActionCreatorsMapObject {
   createStoryBookViaThunk: createStoryBookThunked,
   deleteStoryBookViaThunk: deleteStoryBookThunked,
   updateStoryBookViaThunk: updateStoryBookThunked,
+  dragStoryBookViaThunk: dragStoryBookThunked,
 }
 
 
@@ -87,6 +95,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     createStoryBookViaThunk,
     updateStoryBookViaThunk,
     deleteStoryBookViaThunk,
+    dragStoryBookViaThunk,
   }, dispatch)
 }
 
@@ -107,6 +116,7 @@ class Stories extends React.Component<IProps, State>{
       deleteName: '',
       renameName: '',
       hideNewBookDialog: true,
+      dragId: '',
     }
   }
   componentWillMount() {
@@ -168,7 +178,19 @@ class Stories extends React.Component<IProps, State>{
 
   }
 
-
+  private handleBeforeDrag = (id: string) => {
+    this.setState({ dragId: id });
+  }
+  private handleDrop = (id: string) => {
+    const { dragStoryBookViaThunk } = this.props;
+    let sourceId = this.state.dragId;
+    if (id !== sourceId) {
+      dragStoryBookViaThunk({ source: sourceId, target: id });
+    }
+  }
+  private handleBookClick = (book: MODEL.Storybook) => {
+    console.log(book)
+  }
   render() {
     const { renameName, deleteName } = this.state;
     const { storybooks } = this.props;
@@ -188,40 +210,13 @@ class Stories extends React.Component<IProps, State>{
         <div className="Story-books">
           <p className="ms-fontSize-xl">全部笔记本</p>
           <div className="Story-books-list">
-            {list.map(book => <div key={book._id} className="Story-book">
-              <div className="Story-book-actions">
-                <IconButton
-                  title="菜单"
-                  ariaLabel="菜单"
-                  menuProps={{
-                    onItemClick: this.handleBookActionClick,
-                    items: [
-                      {
-                        key: 'color',
-                        text: '修改背景颜色',
-                        data: book,
-                        iconProps: { iconName: 'Color' }
-                      },
-                      {
-                        key: 'rename',
-                        text: '重命名',
-                        data: book,
-                        iconProps: { iconName: 'Rename' }
-                      },
-                      {
-                        key: 'delete',
-                        text: '删除',
-                        data: book,
-                        iconProps: { iconName: 'Delete' }
-                      }
-                    ],
-                    directionalHintFixed: true
-                  }} />
-              </div>
-              <div className="Story-book-cover">
-                <h1 className="ms-fontSize-xxl ms-fontWeight-regular">{book.name}</h1>
-              </div>
-            </div>)}
+            {list.map(book => <Storybook
+              key={book._id}
+              book={book}
+              onClick={this.handleBookClick}
+              beginDrag={this.handleBeforeDrag}
+              onDrop={this.handleDrop}
+              handleActionClick={this.handleBookActionClick} />)}
 
             <div className="Story-book Story-book-new" onClick={this.showNewBookDialog}>
               <i className="Story--hover-show ms-Icon ms-Icon--Add ms-fontSize-xxl" aria-hidden="true"></i>

@@ -47,7 +47,7 @@
     &:hover &-actions {
       opacity: 1;
       button {
-        color:inherit;
+        color: inherit;
       }
     }
     &-cover {
@@ -92,6 +92,28 @@
           opacity: 1;
         }
       }
+    }
+    &-dragging &-actions {
+      opacity: 0;
+    }
+    &-over {
+      box-shadow: none;
+    }
+    &-over::before {
+      content: '移动到这里';
+      display: inline-block;
+      display: flex;
+      justify-content: center;
+      background-color: @themeDarkColor;
+      color: #fff;
+      box-sizing: border-box;
+      align-items: center;
+      border-radius: 4px 8px 8px 4px;
+      width: inherit;
+      height: inherit;
+    }
+    &-dragging&-over::before {
+      content: "取消移动"
     }
   }
 }

@@ -22,7 +22,8 @@ export enum ActionTypes {
   STORE_ALL_STORY_BOOKS = '[stories] STORE_ALL_STORY_BOOKS',
   CREATE_STORYBOOK = '[stories] CREATE',
   DELETE_STORYBOOK = '[stories] DELETE',
-  UPDATE_STORYBOOK = '[stories] UPDATE'
+  UPDATE_STORYBOOK = '[stories] UPDATE',
+  DRAG_STORYBOOK = '[stories] DRAG',
 }
 
 
@@ -89,7 +90,7 @@ export const deleteStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (
     }
   })
 }
-
+//-------------------------- update story
 export interface updateStorybookAction {
   type: ActionTypes.UPDATE_STORYBOOK,
   data: any
@@ -100,6 +101,20 @@ export const updateStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (
   return fetch('/api/storybooks', { method: 'post', body: httphelper.parseFormData(item) }).then(respnseCheck).then(json => {
     if (json.code === 200) {
       dispatch(updateStorybook(item));
+    }
+  })
+}
+//-------------------------- drag story
+export interface dragStorybookAction {
+  type: ActionTypes.DRAG_STORYBOOK,
+  data: any
+}
+export const dragStorybook: ActionCreator<dragStorybookAction> = (data) => ({ type: ActionTypes.DRAG_STORYBOOK, data });
+export type dragStoryBookThunked = (item: any) => Promise<any>;
+export const dragStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (item: any) => (dispatch: Dispatch) => {
+  return fetch('/api/storybooks', { method: 'post', body: httphelper.parseFormData(item) }).then(respnseCheck).then(json => {
+    if (json.code === 200) {
+      dispatch(dragStorybook(item));
     }
   })
 }

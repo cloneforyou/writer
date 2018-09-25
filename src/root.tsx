@@ -1,5 +1,9 @@
 import * as React from 'react';
 import { Route, Switch, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
+import HTML5Backend from 'react-dnd-html5-backend';
+
+import { DragDropContext } from 'react-dnd';
+
 
 import Landing from './pages/Landing';
 import Setting from './pages/Setting';
@@ -9,6 +13,9 @@ import Stories from './pages/Stories';
 import * as PropTypes from 'prop-types';
 import { Nav, INavProps, INavLinkGroup, INavLink, } from 'office-ui-fabric-react/lib/Nav';
 import AppNav from './components/AppNav';
+
+
+
 export interface Props {
 
 }
@@ -46,4 +53,4 @@ class Root extends React.Component<Props & RouteComponentProps, State>{
   }
 };
 
-export default withRouter(Root);
+export default withRouter(DragDropContext(HTML5Backend)(Root));

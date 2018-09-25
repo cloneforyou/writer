@@ -95,6 +95,36 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       return nextstate;
     }
 
+    case ActionTypes.DRAG_STORYBOOK: {
+      let data: { source: string, target: string } = action.data;
+
+      // orgin orders
+      let $orders = state.orders;
+      let sourceIndex: number = $orders[data.source];
+      let targetIndex: number = $orders[data.target];
+
+      let $list = state.list.slice();
+
+      let item = $list.splice(sourceIndex, 1)[0];
+
+      $list.splice(targetIndex, 0, item);
+
+
+      //rebuild $orders
+      $orders = {};
+      $list.forEach((item, index) => {
+        $orders[item._id] = index;
+      })
+      let nextstate = update(state, {
+        orders: {
+          $set: $orders
+        },
+        list: {
+          $set: $list
+        }
+      });
+      return nextstate;
+    }
     default:
       return state;
   }
