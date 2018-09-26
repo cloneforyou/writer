@@ -93,6 +93,9 @@
         }
       }
     }
+    &-dragging {
+      opacity: 0.7;
+    }
     &-dragging &-actions {
       opacity: 0;
     }
@@ -114,6 +117,10 @@
     }
     &-dragging&-over::before {
       content: "取消移动"
+    }
+    &&-dragging-preview{
+      margin: 0;
+      opacity: 0.7;
     }
   }
 }

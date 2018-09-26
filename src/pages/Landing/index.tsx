@@ -22,7 +22,7 @@ export class NavBasic extends React.Component<any, any> {
     const { currentTab, onLinkClick } = this.props;
 
     return (
-      <div className="ms-NavExample-LeftPane">
+      <div className="ms-Nav-LeftPane">
         <div className="logo">
           <h1>Writer</h1>
         </div>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { connect, InferableComponentEnhancerWithProps, MapStateToProps, MapDispatchToPropsParam } from 'react-redux';
+import { connect, InferableComponentEnhancerWithProps, MapStateToProps, MapDispatchToPropsParam, MapDispatchToProps } from 'react-redux';
 import { withRouter, RouteComponentProps, RouteProps } from 'react-router';
 import { Dispatch, ActionCreator, bindActionCreators, ActionCreatorsMapObject } from 'redux';
 
@@ -52,9 +52,6 @@ interface IDispatchProps {
   updateStoryBookViaThunk: updateStoryBookThunked,
   dragStoryBookViaThunk: dragStoryBookThunked,
 }
-interface PathProps {
-  history: any
-}
 interface IProps extends IStateProps, IDispatchProps, IOwnProps, RouteComponentProps<{}> {
 }
 
@@ -66,7 +63,6 @@ export interface State {
   deleteId: string,
   renameName: string,
   deleteName: string,
-  dragId: string,
 }
 
 
@@ -93,7 +89,7 @@ interface N extends ActionCreatorsMapObject {
 }
 
 
-const mapDispatchToProps: MapDispatchToPropsParam<N, IOwnProps> = (dispatch) => {
+const mapDispatchToProps: MapDispatchToProps<IDispatchProps, IOwnProps> = (dispatch) => {
   return bindActionCreators<M, N>({
     getAllStoryBooksViaThunk,
     createStoryBookViaThunk,
@@ -103,9 +99,6 @@ const mapDispatchToProps: MapDispatchToPropsParam<N, IOwnProps> = (dispatch) => 
   }, dispatch)
 }
 
-interface CreateBookItem {
-  name: string
-}
 
 class Stories extends React.Component<IProps, State>{
   private renameFiled?: ITextField | null;
@@ -120,7 +113,6 @@ class Stories extends React.Component<IProps, State>{
       deleteName: '',
       renameName: '',
       hideNewBookDialog: true,
-      dragId: '',
     }
   }
   componentWillMount() {
@@ -182,15 +174,11 @@ class Stories extends React.Component<IProps, State>{
 
   }
 
-  private handleBeforeDrag = (id: string) => {
-    this.setState({ dragId: id });
-  }
-  private handleDrop = (id: string) => {
+  private handleDrop = (source: string, target: string) => {
     const { dragStoryBookViaThunk } = this.props;
-    let sourceId = this.state.dragId;
-    if (id !== sourceId) {
-      dragStoryBookViaThunk({ source: sourceId, target: id });
-    }
+
+    dragStoryBookViaThunk({ source, target });
+
   }
   private handleBookClick = (book: MODEL.Storybook) => {
     const { history } = this.props;
@@ -220,7 +208,6 @@ class Stories extends React.Component<IProps, State>{
               key={book._id}
               book={book}
               onClick={this.handleBookClick}
-              beginDrag={this.handleBeforeDrag}
               onDrop={this.handleDrop}
               handleActionClick={this.handleBookActionClick} />)}
 
@@ -259,7 +246,7 @@ class Stories extends React.Component<IProps, State>{
             dialogContentProps={{
               title: '确认删除[' + deleteName + ']？',
               subText:
-                '如果笔记本内还有文章，将不能删除笔记本.'
+                '笔记本内的目录和文章也会被删除.'
             }}
             modalProps={{
               isBlocking: false,

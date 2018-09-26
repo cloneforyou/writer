@@ -14,7 +14,7 @@ import StoriesSpace from './pages/Stories/Space';
 import * as PropTypes from 'prop-types';
 import { Nav, INavProps, INavLinkGroup, INavLink, } from 'office-ui-fabric-react/lib/Nav';
 import AppNav from './components/AppNav';
-
+import CustomPreviewLayer from './components/CustomPreviewLayer';
 
 
 export interface Props {
@@ -42,6 +42,7 @@ class Root extends React.Component<Props & RouteComponentProps, State>{
   render() {
     return (
       <div className="app">
+        <CustomPreviewLayer />
         <AppNav onLinkClick={this.handleTabChange} currentTab={this.state.currentTab!} />
         <Switch>
           <Route exact path="/" component={Landing} />

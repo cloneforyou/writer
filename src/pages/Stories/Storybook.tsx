@@ -6,9 +6,9 @@ import {
   DragSourceConnector, DragSourceSpec,
   ConnectDragSource, DragSourceCollector,
   DragSourceMonitor, DropTargetMonitor,
-  DropTargetConnector, ConnectDropTarget
+  DropTargetConnector, ConnectDropTarget, ConnectDragPreview
 } from 'react-dnd';
-
+import { getEmptyImage } from 'react-dnd-html5-backend'
 import * as MODEL from '../../../model'
 import { IconButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
@@ -16,31 +16,35 @@ import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
 export interface IOwnProps {
   handleActionClick: (ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>, item?: IContextualMenuItem) => boolean | void,
   book: MODEL.Storybook,
-  beginDrag: (id: string) => void,
-  onDrop: (id: string) => void,
+  onDrop: (source: string, target: string) => void,
   onClick: (book: MODEL.Storybook) => void,
 }
 
 export interface IDragProps {
   isDragging?: boolean,
   connectDragSource?: ConnectDragSource,
+  connectDragPreview?: ConnectDragPreview,
   isOver?: boolean,
   connectDropTarget?: ConnectDropTarget,
 }
-const bookSource: DragSourceSpec<IProps, { _id: string }> = {
+const bookSource: DragSourceSpec<IProps, { _id: string, name: string }> = {
   beginDrag(props: IProps) {
-    props.beginDrag(props.book._id)
-    return { _id: props.book._id };
+    return { _id: props.book._id, name: props.book.name };
   }
 };
 const bookTarget = {
   drop(props: IProps, monitor: DropTargetMonitor) {
-    props.onDrop(props.book._id);
+    let item = monitor.getItem();
+    let target = props.book._id;
+    if (item._id !== target) {
+      props.onDrop(item._id, target);
+    }
   }
 };
 const collectSource = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
   return {
     connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
     isDragging: monitor.isDragging()
   }
 }
@@ -54,8 +58,18 @@ function collectTarget(connect: DropTargetConnector, monitor: DropTargetMonitor)
 interface IProps extends IDragProps, IOwnProps { }
 
 class Storybook extends React.Component<IProps, {}> {
+  componentDidMount() {
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true,
+      })
+    }
+  }
   render() {
-    const { handleActionClick, book, isDragging, isOver, connectDragSource, connectDropTarget, onClick } = this.props;
+    const { handleActionClick, book, isDragging, isOver, connectDragSource, connectDragPreview, connectDropTarget, onClick } = this.props;
 
     return connectDropTarget!(connectDragSource!(
       <div key={book._id}
@@ -65,7 +79,7 @@ class Storybook extends React.Component<IProps, {}> {
           "Story-book-dragging": isDragging
         })}>
         <div className="Story-book-actions">
-          <IconButton
+          {isDragging ? null : <IconButton
             title="菜单"
             ariaLabel="菜单"
             menuProps={{
@@ -91,12 +105,13 @@ class Storybook extends React.Component<IProps, {}> {
                 }
               ],
               directionalHintFixed: true
-            }} />
+            }} />}
         </div>
         <div className="Story-book-cover">
           <h1 className="ms-fontSize-xxl ms-fontWeight-regular">{book.name}</h1>
         </div>
-      </div>));
+      </div>))
+
   }
 }
 

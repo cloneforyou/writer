@@ -1,0 +1,85 @@
+@import '../../Fabric.theme.less';
+@prefix: Folder;
+.@{prefix}-container {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  overflow: hidden; // height: 100%;
+  flex-direction: column;
+}
+
+.@{prefix} {
+  width: @Folder-nav-width;
+  flex-grow: 1;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; // border: 1px solid #EEE;
+  overflow-y: auto;
+  &-nav {
+    display: flex;
+    flex-grow: 1;
+    z-index: 1;
+    text-align: left;
+    overflow: hidden;
+    align-items: center;
+    margin-right: -20px;
+    &-name {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &:hover &-actions {
+      opacity: 1;
+    }
+    &-actions {
+      opacity: 0;
+    }
+
+    &.Folder-drag-over>&-name {
+      display: inline-block;
+      color: #fff;
+      text-align: center;
+      background-color: @themePrimaryColor;
+    }
+    &.Folder-drag-dragging {
+      opacity: .7;
+    }
+    &.Folder-drag-dragging.Folder-drag-over {
+      opacity: 1;
+    }
+    &.Folder-drag-over &-actions,
+    &.Folder-drag-dragging &-actions {
+      opacity: 0;
+    }
+  }
+  &-new-action {
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 32px;
+    user-select: none;
+    &:hover {
+      background-color: @neutralLightColor;
+    }
+  }
+}
+
+.@{prefix}-dragging-preview {
+  cursor: pointer;
+  text-align: left;
+  width: @Folder-nav-width;
+  opacity: .7;
+  height: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  margin-left: -31px;
+  padding: 0 24px 0 28px;
+  user-select: none;
+  background-color: @neutralLightColor;
+  .ellipsis();
+}

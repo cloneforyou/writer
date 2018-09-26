@@ -5,6 +5,8 @@ import { Route, Switch, withRouter, RouteComponentProps } from 'react-router-dom
 import * as PropTypes from 'prop-types';
 import { Nav, INavProps, INavLinkGroup, INavLink, } from 'office-ui-fabric-react/lib/Nav';
 
+import './index.less';
+
 export interface Props {
   onLinkClick: Function,
   currentTab: string
@@ -24,7 +26,7 @@ export class NavBasic extends React.Component<any, any> {
     const { currentTab, onLinkClick } = this.props;
 
     return (
-      <div className="ms-NavExample-LeftPane">
+      <div className="ms-Nav-LeftPane">
         <div className="logo">
           <h1>Writer</h1>
         </div>
