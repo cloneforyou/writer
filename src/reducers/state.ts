@@ -14,12 +14,6 @@ export namespace STATE {
     name?: string
   }
 
-  export interface RootState {
-
-    common: CommonState,
-    storybooks: StorybooksState,
-    folders: FoldersState
-  }
 
   export interface FoldersState {
     loading: boolean,
@@ -28,4 +22,18 @@ export namespace STATE {
     }
     list: MODEL.Folder[]
   }
+  export interface ArticlesState {
+    loading: boolean,
+    orders: {
+      [anyProp: string]: number
+    }
+    list: MODEL.Folder[]
+  }
+  export interface RootState {
+    articles: ArticlesState,
+    common: CommonState,
+    storybooks: StorybooksState,
+    folders: FoldersState
+  }
+
 }

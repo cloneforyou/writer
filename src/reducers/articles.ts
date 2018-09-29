@@ -7,14 +7,14 @@ import { ActionTypes, saveStorybooksAction } from '../actions'
 import { STATE } from './state';
 import { DRAG_TYPES } from '../constants/types';
 
-const INITIAL_STATE: STATE.FoldersState = {
+const INITIAL_STATE: STATE.ArticlesState = {
   loading: false,
   orders: {},
   list: []
 }
 
 
-const folders_reducer: Reducer<STATE.FoldersState, AnyAction> = (state = INITIAL_STATE, action) => {
+const folders_reducer: Reducer<STATE.ArticlesState, AnyAction> = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ActionTypes.LOADING_FOLDER: {
       let nextstate = update(state, {

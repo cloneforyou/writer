@@ -1,10 +1,9 @@
-/// <reference path="./state.ts" />
 import * as MODEL from '../../model';
 
 import update from 'immutability-helper';
 import { Reducer, Action, AnyAction } from 'redux';
 
-import { ActionTypes, LOADING_ACTION } from '../actions/index'
+import { ActionTypes, saveStorybooksAction } from '../actions/index'
 import { STATE } from './state';
 import { DRAG_TYPES } from '../constants/types';
 
@@ -13,6 +12,7 @@ const INITIAL_STATE: STATE.StorybooksState = {
   orders: {},
   list: []
 }
+
 
 
 const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = INITIAL_STATE, action) => {
@@ -27,7 +27,7 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       return nextstate;
     }
     case ActionTypes.STORE_ALL_STORY_BOOKS:
-      let data = action.data;
+      let data = (<saveStorybooksAction>action).data;
 
       //sort storybooks
       let orders = data.orders;

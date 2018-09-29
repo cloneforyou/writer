@@ -48,12 +48,12 @@ export const respnseCheck = (resp: Response): Promise<any> => {
   }
 }
 
-
-export type LOADING_ACTION<T> = (loading: boolean) => ({ type: T, loading: boolean });
+interface LOADING_ACTION<T> { type: T, loading: boolean };
+export type LOADING_CREATOR<T> = (loading: boolean) => LOADING_ACTION<T>;
 
 // Actions
 // -------------------------- getAll story
-export const setStoryLoading: LOADING_ACTION<ActionTypes.LOADING_STORY> = (loading) => ({ type: ActionTypes.LOADING_STORY, loading })
+export const setStoryLoading: LOADING_CREATOR<ActionTypes.LOADING_STORY> = (loading) => ({ type: ActionTypes.LOADING_STORY, loading })
 export interface saveStorybooksAction extends Action {
   data: {
     orders: { [anyprops: string]: number }
@@ -80,7 +80,7 @@ export const getAllStoryBooksViaThunk: ActionCreator<ReduxThunkPromiseAction> = 
 
 
 // -------------------------- create story
-export interface createStoryBookAction {
+export interface createStoryBookAction extends Action {
   type: ActionTypes.CREATE_STORYBOOK,
   data: MODEL.Storybook
 }
@@ -100,7 +100,7 @@ export const createStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (
 }
 
 // -------------------------- delete story
-export interface deleteStorybookAction {
+export interface deleteStorybookAction extends Action {
   type: ActionTypes.DELETE_STORYBOOK,
   data: { _id: string }
 }
@@ -116,7 +116,7 @@ export const deleteStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (
   })
 }
 //-------------------------- update story
-export interface updateStorybookAction {
+export interface updateStorybookAction extends Action {
   type: ActionTypes.UPDATE_STORYBOOK,
   data: any
 }
@@ -132,7 +132,7 @@ export const updateStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (
   })
 }
 //-------------------------- drag story
-export interface dragStorybookAction {
+export interface dragStorybookAction extends Action {
   type: ActionTypes.DRAG_STORYBOOK,
   data: any
 }
@@ -147,8 +147,11 @@ export const dragStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction> = (it
     dispatch(hideLoading());
   })
 }
+
+
+
 // -------------------------- get folders
-export const setFolderLoading: LOADING_ACTION<ActionTypes.LOADING_FOLDER> = (loading) => ({ type: ActionTypes.LOADING_FOLDER, loading })
+export const setFolderLoading: LOADING_CREATOR<ActionTypes.LOADING_FOLDER> = (loading) => ({ type: ActionTypes.LOADING_FOLDER, loading })
 export interface saveFoldersAction extends Action {
   type: ActionTypes.STORE_FOLDERS,
   data: {
@@ -170,7 +173,6 @@ export const getAllFoldersViaThunk: ActionCreator<ReduxThunkPromiseAction> = (id
     dispatch(setFolderLoading(false));
   })
 }
-
 
 // -------------------------- create folder
 export interface createFolderAction {

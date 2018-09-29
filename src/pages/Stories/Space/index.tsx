@@ -22,7 +22,7 @@ import {
 } from '../../../actions'
 
 import TreeFolder from '../../../components/TreeFolder';
-
+import ArticleList from '../../../components/ArticleList'
 
 interface IOwnProps {
   //... props exposed for the real parent component
@@ -115,6 +115,9 @@ class BookSpace extends React.PureComponent<IProps, State>{
       <div className="BookSpace">
         <div className="BookSpace-Folder">
           <TreeFolder />
+        </div>
+        <div className="BookSpace-ArticleList">
+          <ArticleList />
         </div>
       </div>
     )
