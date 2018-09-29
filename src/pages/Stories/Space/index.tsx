@@ -78,7 +78,7 @@ interface CreateBookItem {
   name: string
 }
 
-class BookSpace extends React.Component<IProps, State>{
+class BookSpace extends React.PureComponent<IProps, State>{
   private renameFiled?: ITextField | null;
   private newbookFiled?: ITextField | null;
   constructor(props: IProps) {

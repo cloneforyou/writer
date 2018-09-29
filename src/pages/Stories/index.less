@@ -4,6 +4,7 @@
 .@{prefix} {
   display: flex;
   flex-direction: column;
+  position: relative;
   flex-grow: 1;
   justify-content: stretch;
   height: 100vh;
@@ -96,6 +97,9 @@
     &-dragging {
       opacity: 0.7;
     }
+    &-dragging&-over {
+      opacity: 1;
+    }
     &-dragging &-actions {
       opacity: 0;
     }
@@ -118,7 +122,7 @@
     &-dragging&-over::before {
       content: "取消移动"
     }
-    &&-dragging-preview{
+    &&-dragging-preview {
       margin: 0;
       opacity: 0.7;
     }

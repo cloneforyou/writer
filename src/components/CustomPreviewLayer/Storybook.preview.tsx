@@ -20,7 +20,7 @@ export interface IDragProps {
 
 interface IProps extends IDragProps, IOwnProps { }
 
-class StorybookPreview extends React.Component<IProps, {}> {
+class StorybookPreview extends React.PureComponent<IProps, {}> {
   render() {
     const { name } = this.props;
     return (

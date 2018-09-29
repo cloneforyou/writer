@@ -34,7 +34,6 @@
     &-actions {
       opacity: 0;
     }
-
     &.Folder-drag-over>&-name {
       display: inline-block;
       color: #fff;
@@ -82,4 +81,7 @@
   user-select: none;
   background-color: @neutralLightColor;
   .ellipsis();
+  div {
+    .ellipsis();
+  }
 }

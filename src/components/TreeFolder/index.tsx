@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { Route, Switch, withRouter, RouteComponentProps } from 'react-router-dom';
 import classnames from 'classnames';
 import { DRAG_TYPES } from '../../constants/types';
@@ -25,13 +26,16 @@ import { TextField, ITextField } from 'office-ui-fabric-react/lib/TextField';
 import { STATE } from '../../reducers/state';
 import { MapStateToProps, MapDispatchToPropsParam, connect, DispatchProp, MapDispatchToProps } from 'react-redux';
 import { ActionCreatorsMapObject, ActionCreator, bindActionCreators, Dispatch } from 'redux';
-import { ReduxThunkPromiseAction, getAllStoryBooksThunked, createStoryBookThunked, deleteStoryBookThunked, updateStoryBookThunked, dragStoryBookThunked, getAllStoryBooksViaThunk, createStoryBookViaThunk, updateStoryBookViaThunk, deleteStoryBookViaThunk, dragStoryBookViaThunk } from '../../actions';
+import { ReduxThunkPromiseAction, getAllFoldersThunked, createFolderThunked, deleteFolderThunked, updateFolderThunked, dragFolderThunked, getAllFoldersViaThunk, createFolderViaThunk, updateFolderViaThunk, deleteFolderViaThunk, dragFolderViaThunk } from '../../actions';
 
+
+
+type onDropFunction = (type: DRAG_TYPES.FOLDER | DRAG_TYPES.ARTICLE, source: string, target: string) => void;
 export interface IDragLinkOwnProps {
   handleActionClick: (ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>, item?: IContextualMenuItem) => boolean | void,
   link: INavLink,
-  onDrop: (id: string) => void,
-  onClick: (book: MODEL.Storybook) => void,
+  onDrop: onDropFunction,
+  onClick: (ev?: React.MouseEvent<HTMLElement>, link?: INavLink) => void,
 }
 
 export interface IDragProps {
@@ -41,18 +45,19 @@ export interface IDragProps {
   isOver?: boolean,
   connectDropTarget?: ConnectDropTarget,
 }
-const folderSource: DragSourceSpec<DragableLinkOwnProps, { _id?: string, name: string }> = {
+interface IDragItem { _id: string, name: string }
+const folderSource: DragSourceSpec<DragableLinkOwnProps, IDragItem> = {
   beginDrag(props: DragableLinkOwnProps) {
     // props.beginDrag(props.book._id)
-    return { _id: props.link.key, name: props.link.name };
+    return { _id: props.link.key!, name: props.link.name };
   }
 };
 const folderTarget = {
   drop(props: DragableLinkOwnProps, monitor: DropTargetMonitor) {
-    // props.onDrop(props.book._id);
-    let item = monitor.getItem();
-    let itemType = monitor.getItemType();
+    let item: IDragItem = monitor.getItem();
+    let itemType = monitor.getItemType() as DRAG_TYPES.ARTICLE | DRAG_TYPES.FOLDER;
     console.log(item, itemType);
+    props.onDrop(itemType, item._id, props.link.key!);
   }
 };
 const collectSource = (connect: DragSourceConnector, monitor: DragSourceMonitor) => {
@@ -71,7 +76,7 @@ function collectTarget(connect: DropTargetConnector, monitor: DropTargetMonitor)
 }
 interface DragableLinkOwnProps extends IDragProps, IDragLinkOwnProps { }
 
-export class DragableLink extends React.Component<DragableLinkOwnProps> {
+export class DragableLink extends React.PureComponent<DragableLinkOwnProps> {
   componentDidMount() {
     const { connectDragPreview } = this.props;
     if (connectDragPreview) {
@@ -139,39 +144,29 @@ const DragableLinkConnected = DragSource(DRAG_TYPES.FOLDER, folderSource, collec
 
 
 interface FolderNavProps {
+  data: STATE.FoldersState,
   currentFolder?: string,
   handleActionClick: (ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>, item?: IContextualMenuItem) => boolean | void,
   onLinkClick: (ev?: React.MouseEvent<HTMLElement>, link?: INavLink) => void,
+  onDrop: onDropFunction,
 }
 export class FolderNav extends React.Component<FolderNavProps, any> {
   renderLink: IRenderFunction<INavLink> = (link, defaultRender): JSX.Element | null => {
-    const { handleActionClick } = this.props;
+    const { handleActionClick, onDrop, onLinkClick } = this.props;
     if (typeof link !== 'undefined' && defaultRender) {
-      return <DragableLinkConnected handleActionClick={handleActionClick} onDrop={() => { }} onClick={() => { }} link={link} />
+      return <DragableLinkConnected handleActionClick={handleActionClick} onDrop={onDrop} onClick={onLinkClick} link={link} />
     }
     return null
   }
   render(): JSX.Element {
-    const { currentFolder, onLinkClick } = this.props;
+    const { currentFolder, onLinkClick, data } = this.props;
 
     return (
       <div className="Folder">
         <Nav
           className='reverse'
           groups={[{
-            links: [
-              { name: '新建目录', url: '', key: 'new', path: '/new' },
-              { name: '素年锦时', url: '', key: 'Notes', path: '/notes' },
-              { name: '理想国', url: '', key: 'Inspirations', path: '/ideas' },
-              { name: '攻壳机动队', url: '', key: 'Explore', path: '/explore' },
-              { name: '攻壳机动队-情节', url: '', key: 'Follow', path: '/follow' },
-              { name: '攻壳机动队-人设', url: '', key: 'Favorites', path: '/favorite' },
-              { name: 'As Long As Possiable to test ecllipse long sentence', url: '', key: 'Sync', path: '/sync' },
-              { name: '庆余年', url: '', key: 'Donwload', path: '/download' },
-              { name: '间客', url: '', key: 'TrashBin', path: '/transh' },
-              { name: '私房钱藏匿地点', url: '', key: 'Account', path: '/account' },
-              { name: '秘密', url: '', key: 'Settings', path: '/settings' },
-            ]
+            links: data.list.map(folder => ({ name: folder.name, key: folder._id, url: '', data: folder }))
           }] as INavLinkGroup[]}
           selectedKey={currentFolder}
           onLinkClick={onLinkClick}
@@ -199,45 +194,45 @@ interface IFolderOwnProps {
 interface IFolderStateProps {
   //... props from mapStateToProps
   common: STATE.CommonState,
-  storybooks: STATE.StorybooksState,
+  folders: STATE.FoldersState,
 }
 const mapStateToProps: MapStateToProps<IFolderStateProps, IFolderOwnProps, STATE.RootState> = (state) => ({
   common: state.common,
-  storybooks: state.storybooks,
+  folders: state.folders,
 })
 
 interface IDispatchProps {
   //... props from mapDispatchToProps
-  getAllStoryBooksViaThunk: getAllStoryBooksThunked,
-  createStoryBookViaThunk: createStoryBookThunked,
-  deleteStoryBookViaThunk: deleteStoryBookThunked,
-  updateStoryBookViaThunk: updateStoryBookThunked,
-  dragStoryBookViaThunk: dragStoryBookThunked,
+  getAllFoldersViaThunk: getAllFoldersThunked,
+  createFolderViaThunk: createFolderThunked,
+  deleteFolderViaThunk: deleteFolderThunked,
+  updateFolderViaThunk: updateFolderThunked,
+  dragFolderViaThunk: dragFolderThunked,
 }
 interface M extends ActionCreatorsMapObject {
-  getAllStoryBooksViaThunk: ActionCreator<ReduxThunkPromiseAction>,
-  createStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
-  deleteStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
-  updateStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
-  dragStoryBookViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  getAllFoldersViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  createFolderViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  deleteFolderViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  updateFolderViaThunk: ActionCreator<ReduxThunkPromiseAction>,
+  dragFolderViaThunk: ActionCreator<ReduxThunkPromiseAction>,
 }
 
 interface N extends ActionCreatorsMapObject {
-  getAllStoryBooksViaThunk: getAllStoryBooksThunked,
-  createStoryBookViaThunk: createStoryBookThunked,
-  deleteStoryBookViaThunk: deleteStoryBookThunked,
-  updateStoryBookViaThunk: updateStoryBookThunked,
-  dragStoryBookViaThunk: dragStoryBookThunked,
+  getAllFoldersViaThunk: getAllFoldersThunked,
+  createFolderViaThunk: createFolderThunked,
+  deleteFolderViaThunk: deleteFolderThunked,
+  updateFolderViaThunk: updateFolderThunked,
+  dragFolderViaThunk: dragFolderThunked,
 }
 
 
 const mapDispatchToProps: MapDispatchToProps<IDispatchProps, IFolderOwnProps> = (dispatch) => {
   return bindActionCreators<M, N>({
-    getAllStoryBooksViaThunk,
-    createStoryBookViaThunk,
-    updateStoryBookViaThunk,
-    deleteStoryBookViaThunk,
-    dragStoryBookViaThunk,
+    getAllFoldersViaThunk,
+    createFolderViaThunk,
+    updateFolderViaThunk,
+    deleteFolderViaThunk,
+    dragFolderViaThunk,
   }, dispatch)
 }
 
@@ -260,6 +255,13 @@ class TreeFolder extends React.Component<IFolderAllProps, State>{
       deleteName: '',
       renameName: '',
       hideNewBookDialog: true,
+    }
+  }
+  UNSAFE_componentWillMount() {
+    const { getAllFoldersViaThunk } = this.props;
+    const matchFolder = /^\/stories\/(\w+)/.exec(window.location.pathname);
+    if (matchFolder) {
+      getAllFoldersViaThunk(matchFolder[1]);
     }
   }
   private hideRenameModal = () => {
@@ -293,21 +295,21 @@ class TreeFolder extends React.Component<IFolderAllProps, State>{
     return true;
   }
   private handleRenameFolder = () => {
-    const { updateStoryBookViaThunk } = this.props;
+    const { updateFolderViaThunk } = this.props;
     let value = this.renameFiled && this.renameFiled.value;
     let _id = this.state.renameId;
     if (value && value.trim()) {
-      updateStoryBookViaThunk({ _id: _id, name: value.trim() })
+      updateFolderViaThunk({ _id: _id, name: value.trim() })
         .then(() => {
           this.hideRenameModal();
         })
     }
   };
   private handleCreateNewFolder = () => {
-    const { createStoryBookViaThunk } = this.props;
+    const { createFolderViaThunk } = this.props;
     let value = this.newbookFiled && this.newbookFiled.value;
     if (value && value.trim()) {
-      createStoryBookViaThunk({ name: value.trim() })
+      createFolderViaThunk({ name: value.trim() })
         .then(() => {
           this.hideNewFolderDialog();
         })
@@ -316,22 +318,36 @@ class TreeFolder extends React.Component<IFolderAllProps, State>{
   }
 
   private handleDeleteFolder = () => {
-    const { deleteStoryBookViaThunk } = this.props;
+    const { deleteFolderViaThunk } = this.props;
     let _id = this.state.deleteId;
-    deleteStoryBookViaThunk({ _id }).then(() => {
+    deleteFolderViaThunk({ _id }).then(() => {
       this.hideDeleteDialog();
     })
   }
+  private handleDropToFolder: onDropFunction = (type, source, target) => {
+    const { dragFolderViaThunk } = this.props;
+    dragFolderViaThunk({ type, source, target });
+
+  }
+  private handleBookClick = (book: MODEL.Storybook) => {
+    const { history } = this.props;
+    history.push('/stories/' + book._id);
+    console.log(book)
+  }
   render() {
     const { renameName, deleteName } = this.state;
+    const { folders } = this.props;
     return (
       <div className="Folder-container">
         <FolderNav
           handleActionClick={this.handleFolderActionClick}
           onLinkClick={this.handleTabChange}
-          currentFolder={this.state.currentFolder} />
+          onDrop={this.handleDropToFolder}
+          currentFolder={this.state.currentFolder}
+          data={folders}
+        />
         <div className="Folder-new-action" onClick={this.showNewFolderDialog} ><Icon iconName="Add" />&nbsp;&nbsp;新建目录</div>
-        <Loading spining={false} label="Loading" ariaLabel="Loading" />
+        <Loading spining={folders.loading} label="Loading" ariaLabel="Loading" />
         <Dialog
           hidden={this.state.hideRenameModal}
           onDismiss={this.hideRenameModal}

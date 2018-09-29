@@ -4,21 +4,20 @@ import * as MODEL from '../../model';
 import update from 'immutability-helper';
 import { Reducer, Action, AnyAction } from 'redux';
 
-import { ActionTypes, LOADING_ACTION } from '../actions/index'
+import { ActionTypes, saveStorybooksAction } from '../actions'
 import { STATE } from './state';
 import { DRAG_TYPES } from '../constants/types';
 
-const INITIAL_STATE: STATE.StorybooksState = {
+const INITIAL_STATE: STATE.FoldersState = {
   loading: false,
   orders: {},
   list: []
 }
 
 
-const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = INITIAL_STATE, action) => {
+const folders_reducer: Reducer<STATE.FoldersState, AnyAction> = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ActionTypes.LOADING_STORY: {
-
+    case ActionTypes.LOADING_FOLDER: {
       let nextstate = update(state, {
         loading: {
           $set: action.loading as boolean
@@ -26,12 +25,12 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       });
       return nextstate;
     }
-    case ActionTypes.STORE_ALL_STORY_BOOKS:
+    case ActionTypes.STORE_FOLDERS:
       let data = action.data;
 
-      //sort storybooks
+      //sort folders
       let orders = data.orders;
-      data.list.sort((a: MODEL.Storybook, b: MODEL.Storybook) => orders[a._id] - orders[b._id]);
+      data.list.sort((a: MODEL.Folder, b: MODEL.Folder) => orders[a._id] - orders[b._id]);
 
       let nextstate = update(state, {
         orders: {
@@ -43,8 +42,8 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       });
       return nextstate;
 
-    case ActionTypes.CREATE_STORYBOOK: {
-      let data: MODEL.Storybook = action.data;
+    case ActionTypes.CREATE_FOLDER: {
+      let data: MODEL.Folder = action.data;
       let id = data._id;
       // resort orders
       let $orders = JSON.parse(JSON.stringify(state.orders));
@@ -64,7 +63,7 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       return nextstate;
     }
 
-    case ActionTypes.DELETE_STORYBOOK: {
+    case ActionTypes.DELETE_FOLDER: {
       let data = action.data;
       let id: string = data._id;
       // resort orders
@@ -89,7 +88,7 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       return nextstate;
     }
 
-    case ActionTypes.UPDATE_STORYBOOK: {
+    case ActionTypes.UPDATE_FOLDER: {
       let data = action.data;
       let id: string = data._id;
       // resort orders
@@ -106,39 +105,46 @@ const storybooks_reducer: Reducer<STATE.StorybooksState, AnyAction> = (state = I
       return nextstate;
     }
 
-    case ActionTypes.DRAG_STORYBOOK: {
-      let data: { source: string, target: string } = action.data;
+    case ActionTypes.DRAG_FOLDER: {
+      let data: { type: DRAG_TYPES.ARTICLE | DRAG_TYPES.FOLDER, source: string, target: string } = action.data;
 
-      // orgin orders
-      let $orders = state.orders;
-      let sourceIndex: number = $orders[data.source];
-      let targetIndex: number = $orders[data.target];
+      if (data.type === DRAG_TYPES.FOLDER) {
+        // orgin orders
+        let $orders = state.orders;
+        let sourceIndex: number = $orders[data.source];
+        let targetIndex: number = $orders[data.target];
 
-      let $list = state.list.slice();
+        let $list = state.list.slice();
 
-      let item = $list.splice(sourceIndex, 1)[0];
+        let item = $list.splice(sourceIndex, 1)[0];
 
-      $list.splice(targetIndex, 0, item);
+        $list.splice(targetIndex, 0, item);
 
 
-      //rebuild $orders
-      $orders = {};
-      $list.forEach((item, index) => {
-        $orders[item._id] = index;
-      })
-      let nextstate = update(state, {
-        orders: {
-          $set: $orders
-        },
-        list: {
-          $set: $list
-        }
-      });
-      return nextstate;
+        //rebuild $orders
+        $orders = {};
+        $list.forEach((item, index) => {
+          $orders[item._id] = index;
+        })
+        let nextstate = update(state, {
+          orders: {
+            $set: $orders
+          },
+          list: {
+            $set: $list
+          }
+        });
+        return nextstate;
+      } else {
+        //Do nothing
+        return state;
+      }
+
+
     }
     default:
       return state;
   }
 };
 
-export default storybooks_reducer;
+export default folders_reducer;

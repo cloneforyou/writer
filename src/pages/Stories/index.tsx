@@ -32,7 +32,7 @@ import {
   dragStoryBookViaThunk,
   dragStoryBookThunked,
 } from '../../actions'
-
+import Loading from '../../components/Loading';
 interface IOwnProps {
   //... props exposed for the real parent component
 
@@ -215,6 +215,7 @@ class Stories extends React.Component<IProps, State>{
               <i className="Story--hover-show ms-Icon ms-Icon--Add ms-fontSize-xxl" aria-hidden="true"></i>
               <p className="Story--hover-show ms-fontSize-l">新增笔记本</p>
             </div>
+            <Loading spining={storybooks.loading} ariaLabel="Loading"/>
           </div>
           <Dialog
             hidden={this.state.hideRenameModal}

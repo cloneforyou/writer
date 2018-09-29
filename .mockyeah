@@ -6,6 +6,6 @@
   "capturesDir": "./mockyeah",
   "output": true,
   "journal": false,
-  "verbose": true,
+  "verbose": false,
   "proxy": false
 }

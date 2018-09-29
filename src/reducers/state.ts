@@ -2,6 +2,7 @@ import * as MODEL from '../../model'
 
 export namespace STATE {
   export interface StorybooksState {
+    loading: boolean,
     orders: {
       [anyProp: string]: number
     }
@@ -9,12 +10,22 @@ export namespace STATE {
   }
 
   export interface CommonState {
+    loading: boolean
     name?: string
   }
 
   export interface RootState {
 
     common: CommonState,
-    storybooks: StorybooksState
+    storybooks: StorybooksState,
+    folders: FoldersState
+  }
+
+  export interface FoldersState {
+    loading: boolean,
+    orders: {
+      [anyProp: string]: number
+    }
+    list: MODEL.Folder[]
   }
 }

@@ -4,7 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { DragDropContext } from 'react-dnd';
 
-
+import FabricTheme from './Fabric.theme';
 import Landing from './pages/Landing';
 import Setting from './pages/Setting';
 import Writting from './pages/Writting';
@@ -16,6 +16,7 @@ import { Nav, INavProps, INavLinkGroup, INavLink, } from 'office-ui-fabric-react
 import AppNav from './components/AppNav';
 import CustomPreviewLayer from './components/CustomPreviewLayer';
 
+import LoadingBar from 'react-redux-loading-bar'
 
 export interface Props {
 
@@ -42,6 +43,7 @@ class Root extends React.Component<Props & RouteComponentProps, State>{
   render() {
     return (
       <div className="app">
+        <LoadingBar showFastActions style={{ backgroundColor: FabricTheme.palette.themePrimary }} />
         <CustomPreviewLayer />
         <AppNav onLinkClick={this.handleTabChange} currentTab={this.state.currentTab!} />
         <Switch>

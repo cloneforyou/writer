@@ -57,7 +57,7 @@ function collectTarget(connect: DropTargetConnector, monitor: DropTargetMonitor)
 }
 interface IProps extends IDragProps, IOwnProps { }
 
-class Storybook extends React.Component<IProps, {}> {
+class Storybook extends React.PureComponent<IProps, {}> {
   componentDidMount() {
     const { connectDragPreview } = this.props;
     if (connectDragPreview) {

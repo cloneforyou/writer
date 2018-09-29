@@ -26,13 +26,15 @@ export interface IOwnProps extends ISpinnerProps {
 
 const ContienrStyle: React.CSSProperties = {
   position: 'absolute',
+  top: 0,
+  left: 0,
   display: 'flex',
   width: '100%',
   height: '100%',
   flexGrow: 1,
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: 'rgba(0,0,0,.05)',
+  backgroundColor: 'rgba(0,0,0,.005)',
 }
 
 
