@@ -4,6 +4,7 @@ import { DRAG_TYPES } from '../../constants/types'
 
 import StorybookPreview from './Storybook.preview';
 import FolderPreview from './Folder.preview';
+import ArticlePreview from './Article.preview';
 
 const layerStyles: React.CSSProperties = {
   position: 'fixed',
@@ -49,6 +50,8 @@ const CustomDragLayer: React.SFC<CustomDragLayerProps> = props => {
         return <StorybookPreview name={item.name} />
       case DRAG_TYPES.FOLDER:
         return <FolderPreview name={item.name} />
+        case DRAG_TYPES.ARTICLE:
+        return <ArticlePreview name={item.name}/>
       default:
         return null
     }

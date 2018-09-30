@@ -16,6 +16,7 @@
   overflow-y: auto;
   &-item {
     display: flex;
+    position: relative;
     flex-grow: 1;
     z-index: 1;
     text-align: left;
@@ -25,6 +26,19 @@
     cursor: pointer;
     user-select: none;
     padding: 10px 8px 10px 20px;
+    &.selected:before {
+      position: absolute;
+      content: '';
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-left: 2px solid @themePrimaryColor;
+      color: @themePrimaryColor;
+    }
+    &.selected {
+      background-color: @neutralLighterColor;
+      color: @themePrimaryColor;
+    }
     p {
       margin: 0;
       display: flex;
@@ -52,7 +66,12 @@
       opacity: 1;
     }
     &-actions {
-      opacity: 0;
+      flex-shrink: 0;
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      align-self: flex-end;
+
     }
     &.@{prefix}-drag-over>&-title {
       display: inline-block;
@@ -66,9 +85,18 @@
     &.@{prefix}-drag-dragging.@{prefix}-drag-over {
       opacity: 1;
     }
-    &.@{prefix}-drag-over &-actions,
-    &.@{prefix}-drag-dragging &-actions {
-      opacity: 0;
+    &-dragCover {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: @themePrimaryColor;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
   &-new-action {
@@ -88,17 +116,10 @@
 }
 
 .@{prefix}-dragging-preview {
-  cursor: pointer;
-  text-align: left;
   width: @Folder-nav-width;
-  opacity: .7;
-  height: 36px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  margin-left: -31px;
-  padding: 0 24px 0 28px;
   user-select: none;
+  opacity: .7;
+  box-sizing: border-box;
   background-color: @neutralLightColor;
   .ellipsis();
   div {

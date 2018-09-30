@@ -38,6 +38,9 @@ export interface IDragLinkOwnProps {
   onClick: (ev?: React.MouseEvent<HTMLElement>, link?: INavLink) => void,
 }
 
+export interface IDragArticleDispatchProps {
+  selected: boolean,
+}
 export interface IDragProps {
   isDragging?: boolean,
   connectDragSource?: ConnectDragSource,
@@ -74,9 +77,17 @@ function collectTarget(connect: DropTargetConnector, monitor: DropTargetMonitor)
     isOver: monitor.isOver()
   };
 }
-interface DragableArticleOwnProps extends IDragProps, IDragLinkOwnProps { }
-
-export class DragableArticle extends React.PureComponent<DragableArticleOwnProps> {
+interface DragableArticleOwnProps extends IDragProps, IDragLinkOwnProps, IDragArticleDispatchProps { }
+interface DragableArticleOwnState {
+  hover: boolean,
+}
+export class DragableArticle extends React.PureComponent<DragableArticleOwnProps, DragableArticleOwnState> {
+  constructor(props: DragableArticleOwnProps) {
+    super(props);
+    this.state = {
+      hover: false,
+    }
+  }
   componentDidMount() {
     const { connectDragPreview } = this.props;
     if (connectDragPreview) {
@@ -87,58 +98,80 @@ export class DragableArticle extends React.PureComponent<DragableArticleOwnProps
       })
     }
   }
+  handleMouseEnter = () => {
+    this.setState({ hover: true });
+  }
+  handleMouseLeave = () => {
+    this.setState({ hover: false });
+
+  }
+  handleMouseOver = () => {
+    if (!this.state.hover) {
+      this.setState({ hover: true });
+    }
+  }
   render() {
-    const { link, isDragging, isOver, connectDragSource, connectDropTarget, onClick, handleActionClick } = this.props;
+    const { hover } = this.state;
+    const { link, isDragging, isOver, connectDragSource, connectDropTarget, onClick, handleActionClick, selected } = this.props;
     return connectDropTarget!(connectDragSource!(
       <div className={classnames("ms-Nav-linkText linkText-40 ArticleList-item", {
-        "ArticleList-item-drag-over": isOver,
-        "ArticleList-item-drag-dragging": isDragging
+        "ArticleList-drag-over": isOver,
+        "ArticleList-drag-dragging": isDragging,
+        "selected": selected,
       })}
         title={link.name}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+        onMouseMove={this.handleMouseOver}
       >
-        <div className="ArticleList-item-dragCover"></div>
+        {isOver ? <div className="ArticleList-item-dragCover"> {isDragging ? '取消移动' : '移动到这里'}</div> : null}
         <p className="ArticleList-item-title">
           <span className="ArticleList-item-name">{isOver ? (isDragging ? '取消移动' : '移动到这里') : link.name}</span>
-          <IconButton
-            title="菜单"
-            className="ArticleList-item-actions"
-            ariaLabel="菜单"
-            menuProps={{
-              onItemClick: handleActionClick,
-              items: [
-                {
-                  key: 'export',
-                  text: '导出',
-                  data: link,
-                  iconProps: { iconName: 'Export' },
-                  subMenuProps: {
-                    items: [
-                      {
-                        key: 'clear',
-                        text: 'Clear categories'
-                      },
-                      {
-                        key: 'manage',
-                        text: 'Manage categories'
+          <span className="ArticleList-item-actions">
+            {hover && !isOver && !isDragging ?
+              <IconButton
+                title="菜单"
+                className=""
+                ariaLabel="菜单"
+                menuProps={{
+                  onItemClick: handleActionClick,
+                  items: [
+                    {
+                      key: 'export',
+                      text: '导出',
+                      data: link,
+                      iconProps: { iconName: 'Export' },
+                      subMenuProps: {
+                        items: [
+                          {
+                            key: 'clear',
+                            text: 'Clear categories'
+                          },
+                          {
+                            key: 'manage',
+                            text: 'Manage categories'
+                          }
+                        ]
                       }
-                    ]
-                  }
-                },
-                {
-                  key: 'rename',
-                  text: '重命名',
-                  data: link,
-                  iconProps: { iconName: 'Rename' }
-                },
-                {
-                  key: 'delete',
-                  text: '删除',
-                  data: link,
-                  iconProps: { iconName: 'Delete' }
-                }
-              ],
-              directionalHintFixed: true
-            }} /></p>
+                    },
+                    {
+                      key: 'rename',
+                      text: '重命名',
+                      data: link,
+                      iconProps: { iconName: 'Rename' }
+                    },
+                    {
+                      key: 'delete',
+                      text: '删除',
+                      data: link,
+                      iconProps: { iconName: 'Delete' }
+                    }
+                  ],
+                  directionalHintFixed: true
+                }} />
+              : null}
+          </span>
+        </p>
         <p className="ArticleList-item-time">2018-09-04 12:33</p>
 
       </ div>
@@ -146,7 +179,13 @@ export class DragableArticle extends React.PureComponent<DragableArticleOwnProps
   }
 }
 
-const DragableLinkConnected = DragSource(DRAG_TYPES.ARTICLE, folderSource, collectSource)(DropTarget(DRAG_TYPES.ARTICLE, folderTarget, collectTarget)(DragableArticle))
+const DragableArticleConnected = connect((state, props: IDragLinkOwnProps) => ({ selected: props.link.key == '_23433' }))(
+  DragSource(DRAG_TYPES.ARTICLE, folderSource, collectSource)(
+    DropTarget(DRAG_TYPES.ARTICLE, folderTarget, collectTarget)(
+      DragableArticle
+    )
+  )
+)
 
 
 interface ArtcleListProps {
@@ -164,11 +203,8 @@ export class ArtcleList extends React.Component<ArtcleListProps, any> {
 
     return (
       <div className="ArticleList">
-        <div className="ArticleList-item">
-          <p>再别康桥</p>
-          <p>2018-05-03 12:34</p>
-        </div>
-        <DragableLinkConnected handleActionClick={() => { }} onDrop={() => { }} onClick={() => { }} link={{ key: '_234', name: '再别康桥', url: '' }} />
+        <DragableArticleConnected handleActionClick={() => { }} onDrop={() => { }} onClick={() => { }} link={{ key: '_234', name: '再别康桥', url: '' }} />
+        <DragableArticleConnected handleActionClick={() => { }} onDrop={() => { }} onClick={() => { }} link={{ key: '_23433', name: 'Suuuuuuuper looooooooooooooong article', url: '' }} />
       </div>
     );
   }
